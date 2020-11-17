@@ -25,5 +25,5 @@ if __name__ == '__main__':
                  'd' : [ db ] }
         sr._update(resp)
         
-        print ("Result:", sr.getScanData())
+        print ("Result:", sr.get_scan_data())
         

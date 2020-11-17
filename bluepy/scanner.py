@@ -8,11 +8,11 @@ import sys
 
 class ScanDelegate(DefaultDelegate):
 
-    def handleDiscovery(self, dev, isNewDev, isNewData):
-        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()), dev.addr, dev.getScanData())
+    def handle_discovery(self, dev, is_new_dev, is_new_data):
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()), dev.addr, dev.get_scan_data())
         sys.stdout.flush()
 
-scanner = Scanner().withDelegate(ScanDelegate())
+scanner = Scanner().with_delegate(ScanDelegate())
 
 # listen for ADV_IND packages for 10s, then exit
 scanner.scan(10.0, passive=True)
