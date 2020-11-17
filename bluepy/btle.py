@@ -467,7 +467,7 @@ class Peripheral(BluepyHelper):
             self._connect(addr, addr_type, iface)
 
     def disconnect(self):
-        DGB("Disconnecting from device at address: ", self.device_addr)
+        DBG("Disconnecting from device at address: ", self.device_addr)
         if self._helper is None:
             DBG("Device was already disconnected.")
             return
