@@ -24,15 +24,15 @@ else:
 
 
 def dump_services(dev):
-    services = sorted(dev.services, key=lambda s: s.hndStart)
+    services = sorted(dev.services, key=lambda s: s.handle_start)
     for s in services:
-        print ("\t%04x: %s" % (s.hndStart, s))
-        if s.hndStart == s.hndEnd:
+        print ("\t%04x: %s" % (s.handle_start, s))
+        if s.handle_start == s.handle_end:
             continue
-        chars = s.getCharacteristics()
+        chars = s.get_characteristics()
         for i, c in enumerate(chars):
-            props = c.propertiesToString()
-            h = c.getHandle()
+            props = c.properties_to_string()
+            h = c.get_handle()
             if 'READ' in props:
                 val = c.read()
                 if c.uuid == btle.AssignedNumbers.device_name:
@@ -48,10 +48,10 @@ def dump_services(dev):
 
             while True:
                 h += 1
-                if h > s.hndEnd or (i < len(chars) - 1 and h >= chars[i + 1].getHandle() - 1):
+                if h > s.handle_end or (i < len(chars) - 1 and h >= chars[i + 1].get_handle() - 1):
                     break
                 try:
-                    val = dev.readCharacteristic(h)
+                    val = dev.read_characteristic(h)
                     print ("\t%04x:     <%s>" %
                            (h, binascii.b2a_hex(val).decode('utf-8')))
                 except btle.BTLEException:
@@ -64,10 +64,10 @@ class ScanPrint(btle.DefaultDelegate):
         btle.DefaultDelegate.__init__(self)
         self.opts = opts
 
-    def handleDiscovery(self, dev, isNewDev, isNewData):
-        if isNewDev:
+    def handle_discovery(self, dev, is_new_dev, is_new_data):
+        if is_new_dev:
             status = "new"
-        elif isNewData:
+        elif is_new_data:
             if self.opts.new:
                 return
             status = "update"
@@ -82,16 +82,16 @@ class ScanPrint(btle.DefaultDelegate):
         print ('    Device (%s): %s (%s), %d dBm %s' %
                (status,
                    ANSI_WHITE + dev.addr + ANSI_OFF,
-                   dev.addrType,
+                   dev.addr_type,
                    dev.rssi,
                    ('' if dev.connectable else '(not connectable)'))
                )
-        for (sdid, desc, val) in dev.getScanData():
+        for (sdid, desc, val) in dev.get_scan_data():
             if sdid in [8, 9]:
                 print ('\t' + desc + ': \'' + ANSI_CYAN + val + ANSI_OFF + '\'')
             else:
                 print ('\t' + desc + ': <' + val + '>')
-        if not dev.scanData:
+        if not dev.scan_data:
             print ('\t(no data)')
         print
 
@@ -114,9 +114,9 @@ def main():
                         help='Increase output verbosity')
     arg = parser.parse_args(sys.argv[1:])
 
-    btle.Debugging = arg.verbose
+    btle.debugging = arg.verbose
 
-    scanner = btle.Scanner(arg.hci).withDelegate(ScanPrint(arg))
+    scanner = btle.Scanner(arg.hci).with_delegate(ScanPrint(arg))
 
     print (ANSI_RED + "Scanning for devices..." + ANSI_OFF)
     devices = scanner.scan(arg.timeout)
