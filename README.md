@@ -14,6 +14,13 @@ There is also code which uses this to talk to a TI SensorTag (www.ti.com/sensort
 An example to interface the Nordic Semiconductor ASA IoT Sensor Kit, Thingy:52 is available 
 in thingy52.py (https://www.nordicsemi.com/eng/Products/Nordic-Thingy-52).
 
+About this Fork
+-----------------
+This is a fork of Ian Harvey's Bluepy.
+Changes made:
+* camelCase to snake_case
+* refactored some redundant connection code
+
 Installation
 ------------
 
