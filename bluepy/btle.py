@@ -19,7 +19,6 @@ def preexec_function():
     # signal handler SIG_IGN.
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-Debugging = False
 script_path = os.path.join(os.path.abspath(os.path.dirname(__file__)))
 helperExe = os.path.join(script_path, "bluepy-helper")
 
@@ -30,6 +29,7 @@ SEC_LEVEL_HIGH = "high"
 ADDR_TYPE_PUBLIC = "public"
 ADDR_TYPE_RANDOM = "random"
 
+Debugging = False
 def DBG(*args):
     if Debugging:
         msg = " ".join([str(a) for a in args])
@@ -326,8 +326,11 @@ class BluepyHelper:
 
     @staticmethod
     def parseResp(line):
+        DBG("Parsing response: ", line)
         resp = {}
-        for item in line.rstrip().split('\x1e'):
+        items = line.rstrip().split('\x1e')
+        DBG("Items parsed: ", repr(items))
+        for item in items:
             (tag, tval) = item.split('=')
             if len(tval)==0:
                 val = None
@@ -344,6 +347,7 @@ class BluepyHelper:
                 resp[tag] = [val]
             else:
                 resp[tag].append(val)
+        DBG("Parsed response: ", repr(resp))
         return resp
 
     def _waitResp(self, wantType, timeout=None):
@@ -405,10 +409,7 @@ class Peripheral(BluepyHelper):
         self._serviceMap = None # Indexed by UUID
         (self.deviceAddr, self.addrType, self.iface) = (None, None, None)
 
-        if isinstance(deviceAddr, ScanEntry):
-            self._connect(deviceAddr.addr, deviceAddr.addrType, deviceAddr.iface)
-        elif deviceAddr is not None:
-            self._connect(deviceAddr, addrType, iface)
+        self.connect(deviceAddr, addrType, iface)
 
     def setDelegate(self, delegate_): # same as withDelegate(), deprecated
         return self.withDelegate(delegate_)
@@ -439,6 +440,7 @@ class Peripheral(BluepyHelper):
             return resp
 
     def _connect(self, addr, addrType=ADDR_TYPE_PUBLIC, iface=None):
+        DBG("Connecting to Peripheral at address: ", addr)
         if len(addr.split(":")) != 6:
             raise ValueError("Expected MAC address, got %s" % repr(addr))
         if addrType not in (ADDR_TYPE_PUBLIC, ADDR_TYPE_RANDOM):
@@ -465,7 +467,9 @@ class Peripheral(BluepyHelper):
             self._connect(addr, addrType, iface)
 
     def disconnect(self):
+        DGB("Disconnecting from device at address: ", self.deviceAddr)
         if self._helper is None:
+            DBG("Device was already disconnected.")
             return
         # Unregister the delegate first
         self.setDelegate(None)
@@ -473,6 +477,7 @@ class Peripheral(BluepyHelper):
         self._writeCmd("disc\n")
         self._getResp('stat')
         self._stopHelper()
+        DBG("Device successfully disconnected.")
 
     def discoverServices(self):
         self._writeCmd("svcs\n")
