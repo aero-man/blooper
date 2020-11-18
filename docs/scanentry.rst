@@ -18,7 +18,7 @@ be created by the user.
 Instance Methods
 ----------------
 
-.. py:method:: getDescription(adtype)
+.. py:method:: get_description(adtype)
 
     Returns a human-readable description of the advertising data 'type'
     code *adtype*. For instance, an *adtype* value of 9 would return the
@@ -26,18 +26,18 @@ Instance Methods
     assigned numbers at https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
     for a complete list.
     
-.. py:method:: getValueText(adtype)
+.. py:method:: get_value_text(adtype)
 
     Returns a human-readable string representation of the advertising data
     for code *adtype*. Values such as the 'local name' are returned as
     strings directly; other values are converted to hex strings. If the
     requested data is not available, ``None`` is returned.
 
-.. py:method:: getScanData()
+.. py:method:: get_scan_data()
 
     Returns a list of tuples *(adtype, description, value)* containing the
     AD type code, human-readable description and value (as reported by
-    ``getDescription()`` and ``getValueText()``) for all available advertising
+    ``get_description()`` and ``get_value_text()``) for all available advertising
     data items.
     
 Properties
@@ -49,7 +49,7 @@ All the properties listed below are read-only.
 
     Device MAC address (as a hex string separated by colons).
     
-.. py:attribute:: addrType
+.. py:attribute:: addr_type
 
     Device address type - one of *ADDR_TYPE_PUBLIC* or *ADDR_TYPE_RANDOM*.
 
@@ -68,7 +68,7 @@ All the properties listed below are read-only.
     Boolean value - ``True`` if the device supports connections, and ``False`` 
     otherwise (typically used for advertising 'beacons').
     
-.. py:attribute:: updateCount
+.. py:attribute:: update_count
 
     Integer count of the number of advertising packets received from the device
     so far (since *clear()* was called on the ``Scanner`` object which found it).

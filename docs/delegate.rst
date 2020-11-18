@@ -22,19 +22,19 @@ Constructor
 Instance Methods
 ----------------
 
-.. py:method:: handleNotification(cHandle, data)
+.. py:method:: handle_notification(c_handle, data)
 
    Called when a notification or indication is received from a connected
-   ``Peripheral`` object. *cHandle* is the (integer) handle for the 
+   ``Peripheral`` object. *c_handle* is the (integer) handle for the 
    characteristic - this can be used to distinguish between notifications
    from multiple sources on the same peripheral. *data* is the characteristic
    data (a ``str`` type on Python 2.x, and ``bytes`` on 3.x).
 
-.. py:method:: handleDiscovery(scanEntry, isNewDev, isNewData)
+.. py:method:: handle_discovery(scan_entry, is_new_dev, is_new_data)
 
    Called when advertising data is received from an LE device while a
-   ``Scanner`` object is active. *scanEntry* contains device information
-   and advertising data - see the ``ScanEntry`` class for details. *isNewDev* 
+   ``Scanner`` object is active. *scan_entry* contains device information
+   and advertising data - see the ``ScanEntry`` class for details. *is_new_dev* 
    is ``True`` if the device (as identified by its MAC address) has not been
-   seen before by the scanner, and ``False`` otherwise. *isNewData* is ``True``
+   seen before by the scanner, and ``False`` otherwise. *is_new_data* is ``True``
    if new or updated advertising data is available.

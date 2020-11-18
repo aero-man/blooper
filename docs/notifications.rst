@@ -7,18 +7,18 @@ In ``bluepy``, notifications are processed by creating a "delegate" object and
 registering it with the ``Peripheral``. A method in the delegate is called whenever
 a notification is received from the peripheral, as shown below:
 
-.. function:: handleNotification(cHandle, data)
+.. function:: handle_notification(c_handle, data)
 
     Called when a notification has been received from a ``Peripheral``. Normally
-    you will call the peripheral's ``waitForNotifications()`` method to allow this,
+    you will call the peripheral's ``wait_for_notifications()`` method to allow this,
     but note that a Bluetooth LE device may transmit notifications at any time. This
-    means that *handleNotification()* can potentially be called when any BluePy call
+    means that *handle_notification()* can potentially be called when any BluePy call
     is in progress.
 
-    The *cHandle* parameter is the GATT 'handle' for the characteristic which is 
+    The *c_handle* parameter is the GATT 'handle' for the characteristic which is 
     sending the notification. If a peripheral sends notifications for more than one
     characteristic, this may be used to distinguish them. The 'handle' value can be
-    found by calling the ``getHandle()`` method of a ``Characteristic`` object.
+    found by calling the ``get_handle()`` method of a ``Characteristic`` object.
 
     The *data* parameter is a ``str`` (Python 2.x) or ``bytes`` (Python 3.x) value
     containing the notification data. It is recommended you use Python's ``struct``
@@ -40,8 +40,8 @@ Code to receive notifications from a peripheral can follow the outline below::
             btle.DefaultDelegate.__init__(self)
             # ... initialise here
 
-        def handleNotification(self, cHandle, data):
-            # ... perhaps check cHandle
+        def handle_notification(self, c_handle, data):
+            # ... perhaps check c_handle
             # ... process 'data'
 
     
@@ -51,15 +51,15 @@ Code to receive notifications from a peripheral can follow the outline below::
     p.setDelegate( MyDelegate(params) )
 
     # Setup to turn notifications on, e.g.
-    #   svc = p.getServiceByUUID( service_uuid )
-    #   ch = svc.getCharacteristics( char_uuid )[0]
+    #   svc = p.get_service_by_uuid( service_uuid )
+    #   ch = svc.get_characteristics( char_uuid )[0]
     #   ch.write( setup_data )
 
     # Main loop --------
 
     while True:
-        if p.waitForNotifications(1.0):
-            # handleNotification() was called
+        if p.wait_for_notifications(1.0):
+            # handle_notification() was called
             continue
 
         print "Waiting..."

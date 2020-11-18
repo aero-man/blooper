@@ -12,7 +12,7 @@ Constructor
 -----------
 
 You should not construct ``Characteristic`` objects directly. Instead, use the
-``getCharacteristics()`` method of a connected ``Peripheral`` object.
+``get_characteristics()`` method of a connected ``Peripheral`` object.
 
 Instance Methods
 ----------------
@@ -24,24 +24,24 @@ Instance Methods
     used with the `struct` module to extract integer values from the data. 
     
 
-.. function:: write(data, [withResponse=False])
+.. function:: write(data, [with_response=False])
 
     Writes the given *data* to the characteristic. *data* should be of type `str` for
     Python 2.x, and type `bytes` for Python 3.x. Bluetooth LE allows the sender to
     request the peripheral to send a response to confirm that the data has been received.
-    Setting the *withResponse* parameter to *True* will make this request. A 
+    Setting the *with_response* parameter to *True* will make this request. A 
     `BTLEException` will be raised if the confirmation process fails.
     
-.. function:: supportsRead()
+.. function:: supports_read()
 
     Returns *True* if the characteristic can be read (as indicated by its properties)
     and *False* otherwise.
  
-.. function:: propertiesToString()
+.. function:: properties_to_string()
 
     Returns a string describing the characteristic properties ('READ', 'WRITE', etc).
 
-.. function:: getHandle()
+.. function:: get_handle()
 
     Returns the 16-bit integer value used to identify the characteristic in the
     underlying GATT protocol. This may be useful to distinguish between notifications

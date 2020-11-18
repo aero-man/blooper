@@ -16,7 +16,7 @@ Constructor
 Instance Methods
 ----------------
 
-.. function:: getCommonName()
+.. function:: get_common_name()
 
     Returns string describing that UUID. If the UUID is one listed
     in :ref:`assignednumbers` this will be a human-readable name e.g.
@@ -27,6 +27,6 @@ Properties
 
 All the properties listed below are read-only.
 
-.. py:attribute:: binVal
+.. py:attribute:: bin_val
 
     The UUID expressed in binary (a ``str`` object on Python 2.x, ``bytes`` on 3.x).

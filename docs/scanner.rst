@@ -23,7 +23,7 @@ Constructor
 Instance Methods
 ----------------
 
-.. function:: withDelegate(delegate)
+.. function:: with_delegate(delegate)
 
     Stores a reference to a *delegate* object, which receives callbacks
     when broadcasts from devices are received. See the documentation for
@@ -61,7 +61,7 @@ Instance Methods
     Disables reception of advertising broadcasts. Should be called after
     *process()* has returned.
 
-.. function:: getDevices()
+.. function:: get_devices()
 
     Returns a list (a *view* on Python 3.x) of ``ScanEntry`` objects for
     all devices which have been discovered (since the last *clear()* call).
@@ -80,14 +80,14 @@ Basic code to run a LE device scan for 10 seconds follows this example::
             DefaultDelegate.__init__(self)
 
         # when this python script discovers a BLE broadcast packet, print a message with the device's MAC address
-        def handleDiscovery(self, dev, isNewDev, isNewData):
-            if isNewDev:
+        def handle_discovery(self, dev, is_new_dev, is_new_data):
+            if is_new_dev:
                 print "Discovered device", dev.addr
-            elif isNewData:
+            elif is_new_data:
                 print "Received new data from", dev.addr
 
     # create a scanner object that sends BLE broadcast packets to the ScanDelegate
-    scanner = Scanner().withDelegate(ScanDelegate())
+    scanner = Scanner().with_delegate(ScanDelegate())
     
     # create a list of unique devices that the scanner discovered during a 10-second scan
     devices = scanner.scan(10.0)
@@ -96,14 +96,14 @@ Basic code to run a LE device scan for 10 seconds follows this example::
     for dev in devices:
         # print  the device's MAC address, its address type, 
         # and Received Signal Strength Indication that shows how strong the signal was when the script received the broadcast.   
-        print "Device %s (%s), RSSI=%d dB" % (dev.addr, dev.addrType, dev.rssi)
+        print "Device %s (%s), RSSI=%d dB" % (dev.addr, dev.addr_type, dev.rssi)
 
         # For each of the device's advertising data items, print a description of the data type and value of the data itself 
         # getScanData returns a list of tupples: adtype, desc, value
         # where AD Type means “advertising data type,” as defined by Bluetooth convention:
         # https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile 
         # desc is a human-readable description of the data type and value is the data itself  
-        for (adtype, desc, value) in dev.getScanData():
+        for (adtype, desc, value) in dev.get_scan_data():
             print "  %s = %s" % (desc, value)
 
 
@@ -118,14 +118,14 @@ For continuous scanning, follow this example::
             DefaultDelegate.__init__(self)
 
         # when this python script discovers a BLE broadcast packet, print a message with the device's MAC address
-        def handleDiscovery(self, dev, isNewDev, isNewData):
-            if isNewDev:
+        def handle_discovery(self, dev, is_new_dev, is_new_data):
+            if is_new_dev:
                 print "Discovered device", dev.addr
-            elif isNewData:
+            elif is_new_data:
                 print "Received new data from", dev.addr
 
     # create a scanner object that sends BLE broadcast packets to the ScanDelegate
-    scanner = Scanner().withDelegate(ScanDelegate())
+    scanner = Scanner().with_delegate(ScanDelegate())
     
     # start the scanner and keep the process running 
     scanner.start()
@@ -134,7 +134,8 @@ For continuous scanning, follow this example::
         scanner.process()
 
 
-NOTE that (1) LE scanning must be run as root and (2) the continuous scanning code never completes, so you'll need to do useful things in the `handleDiscovery()` method of your delegate.  
+NOTE that (1) LE scanning must be run as root and (2) the continuous scanning code never completes, 
+so you'll need to do useful things in the `handle_discovery()` method of your delegate.  
 
 See the documentation for ``ScanEntry`` for the information available via the *dev*
 parameter passed to the delegate.
