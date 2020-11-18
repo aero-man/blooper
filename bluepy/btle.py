@@ -1,8 +1,7 @@
 #!/usr/bin/env python
+"""Bluetooth Low Energy Python interface"""
 
 from __future__ import print_function
-
-"""Bluetooth Low Energy Python interface"""
 import sys
 import os
 import time
@@ -19,6 +18,7 @@ def preexec_function():
     # signal handler SIG_IGN.
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
+# Location of the bluepy-helper C executable
 script_path = os.path.join(os.path.abspath(os.path.dirname(__file__)))
 helper_exe = os.path.join(script_path, "bluepy-helper")
 
@@ -29,6 +29,7 @@ SEC_LEVEL_HIGH = "high"
 ADDR_TYPE_PUBLIC = "public"
 ADDR_TYPE_RANDOM = "random"
 
+# If true, various DBG() messages throughout the code are called and printed
 debugging = False
 def DBG(*args):
     if debugging:
@@ -86,6 +87,9 @@ class BTLEGattError(BTLEException):
 
 
 class UUID:
+    """Universally Unique Identifier for Bluetooth characteristics,
+    services, etc.
+    """
     def __init__(self, val, common_name=None):
         '''We accept: 32-digit hex strings, with and without '-' characters,
            4 to 8 digit hex strings, and integers'''
@@ -124,6 +128,10 @@ class UUID:
         return hash(self.bin_val)
 
     def get_common_name(self):
+        """Bluetooth characteristics, services, and so on may have a common,
+        human-readable names, such as `Battery Level` or `Blood Pressure
+        Measurement`. See `assignednumbers.rst` for more info.
+        """
         s = AssignedNumbers.get_common_name(self)
         if s:
             return s
@@ -135,6 +143,10 @@ class UUID:
         return s
 
 class Service:
+    """A service is a group of related Bluetooth characteristics. Examples include
+    a Battery Service that contains a Battery Level Characteristic, or a Cardio Monitor
+    Service that include a Heart Rate Characteristic and a Blood Oxygen Characteristic.
+    """
     def __init__(self, *args):
         (self.peripheral, uuid_val, self.handle_start, self.handle_end) = args
         self.uuid = UUID(uuid_val)
@@ -150,6 +162,9 @@ class Service:
         return self.chars
 
     def get_descriptors(self, for_uuid=None):
+        """Descriptors hold further information about a service or characteristic.
+        Bluepy does not currently have much functionality for descriptors.
+        """
         if not self.descs:
             # Grab all descriptors in our range, except for the service
             # declaration descriptor
@@ -163,13 +178,21 @@ class Service:
         return self.descs
 
     def __str__(self):
-        return "Service <uuid=%s handleStart=%s handleEnd=%s>" % (self.uuid.get_common_name(),
+        return "Service <uuid=%s handle_start=%s handle_end=%s>" % (self.uuid.get_common_name(),
                                                                  self.handle_start,
                                                                  self.handle_end)
 
 class Characteristic:
-    # Currently only READ is used in supports_read function,
-    # the rest is included to facilitate supportsXXXX functions if required
+    """Characteristics accept and give us the data we actually want. For example, if
+    you want heart rate data, you may "read" or "subscribe" to the device's Heart
+    Rate Characteristic (depending on the characteristic). If you want to set a
+    setting on a device, you will "write" to a setting characteristic. Characteristics
+    can be read, written to, and subscribed to (AKA the NOTIFY portion of Bluetooth's
+    READ/WRITE/NOTIFY capabilities). 
+
+    Currently only READ is used in `supports_read` function,
+    the rest is included to facilitate supportsXXXX functions if required
+    """
     props = {"BROADCAST":    0b00000001,
              "READ":         0b00000010,
              "WRITE_NO_RESP":0b00000100,
@@ -202,6 +225,9 @@ class Characteristic:
         return self.peripheral.write_characteristic(self.val_handle, val, with_response)
 
     def get_descriptors(self, for_uuid=None, handle_end=0xFFFF):
+        """Descriptors hold further information about a service or characteristic.
+        Bluepy does not currently have much functionality for descriptors.
+        """
         if not self.descs:
             # Descriptors (not counting the value descriptor) begin after
             # the handle for the value descriptor and stop when we reach
@@ -237,6 +263,9 @@ class Characteristic:
         return self.val_handle
 
 class Descriptor:
+    """Descriptors hold further information about a service or characteristic.
+    Bluepy does not currently have much functionality for descriptors.
+    """
     def __init__(self, *args):
         (self.peripheral, uuid_val, self.handle) = args
         self.uuid = UUID(uuid_val)
@@ -252,6 +281,14 @@ class Descriptor:
         self.peripheral.write_characteristic(self.handle, val, with_response)
 
 class DefaultDelegate:
+    """Delegates handle callbacks from a Bluetooth device. These can be
+    notification packets with data from a Characteristic that we have subscribed
+    to or information about a newly discovered Bluetooth device during a scan.
+    
+    The intention is for this class to be inherited by your own custom Delegate
+    class and have the `handle` functions overridden for your own purposes. See
+    `docs/delegate.rst` for more info.
+    """
     def __init__(self):
         pass
 
@@ -262,6 +299,9 @@ class DefaultDelegate:
         DBG("Discovered device", scan_entry.addr)
 
 class BluepyHelper:
+    """Interface with the bluepy-helper C code that talks to the operating system
+    and handles all the low-level Bluetooth operations.
+    """
     def __init__(self):
         self._helper = None
         self._lineq = None
@@ -274,6 +314,7 @@ class BluepyHelper:
         return self
 
     def _start_helper(self, iface=None):
+        """Run bluepy-helper as a subprocess"""
         if self._helper is None:
             DBG("Running ", helper_exe)
             self._lineq = Queue()
@@ -326,6 +367,9 @@ class BluepyHelper:
 
     @staticmethod
     def parse_resp(line):
+        """Parse a response from the Bluetooth device, depending on its format
+        (bin, hex, etc.)
+        """
         DBG("Parsing response: ", line)
         resp = {}
         items = line.rstrip().split('\x1e')
@@ -404,6 +448,10 @@ class BluepyHelper:
 
 
 class Peripheral(BluepyHelper):
+    """A Bluetooth device, typically the one we are trying to connect to from our main
+    computer. Our computer is the `Central` and the Arduino/smartwatch/thermostat we
+    want to connect to is the `Peripheral` (in 99% of cases).
+    """
     def __init__(self, device_addr=None, addr_type=ADDR_TYPE_PUBLIC, iface=None):
         BluepyHelper.__init__(self)
         self._service_map = None # Indexed by UUID
@@ -804,6 +852,7 @@ class ScanEntry:
          
  
 class Scanner(BluepyHelper):
+    """Scan for Bluetooth devices in the area."""
     def __init__(self,iface=0):
         BluepyHelper.__init__(self)
         self.scanned = {}
@@ -891,9 +940,9 @@ def capitalise_name(descr):
     return "".join(cap_words)
 
 class _UUIDNameMap:
-    # Constructor sets self.currentTimeService, self.txPower, and so on
-    # from names.
+    """Map UUID to their common names. See `assignednumbers.rst` for more info."""
     def __init__(self, id_list):
+        """Constructor sets self.currentTimeService, self.txPower, and so on from names."""
         self.id_map = {}
 
         for uuid in id_list:

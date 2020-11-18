@@ -6,8 +6,10 @@ Assigned Numbers
 The ``AssignedNumbers`` object is a convenient way to refer to common Bluetooth-related
 Assigned Numbers by using textual names. So, for instance ``AssignedNumbers.firmwareRevisionString``
 is a ``UUID`` object for the `Firmware Revision String` characteristic identifier (0x2A26).
+Local translations are available in `bluepy/uuids.json`
 
-The complete list of Bluetooth assigned numbers is given at https://www.bluetooth.com/specifications/assigned-numbers/
+The complete list of Bluetooth assigned numbers is given at 
+https://www.bluetooth.com/specifications/assigned-numbers/
 
 The current version of `bluepy` includes the following defined values::
 

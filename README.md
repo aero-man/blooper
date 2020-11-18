@@ -20,6 +20,7 @@ This is a fork of Ian Harvey's Bluepy.
 Changes made:
 * camelCase to snake_case
 * refactored some redundant connection code
+* documentation of functions/classes directly in code
 
 Installation
 ------------
